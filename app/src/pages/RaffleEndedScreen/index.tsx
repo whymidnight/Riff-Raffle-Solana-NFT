@@ -19,6 +19,7 @@ import useCommonStyles from '../../assets/styles';
 import { useStyles } from './styles';
 import { useViewport } from '../../hooks/useViewport';
 import { DeviceType } from '../../providers/ViewportProvider';
+import Paper from '@material-ui/core/Paper';
 
 interface IRaffleEndedScreenProps {
   raffle: Raffle;
@@ -90,6 +91,7 @@ const RaffleEndedScreen: FC<IRaffleEndedScreenProps> = ({
   if (!raffle) return null;
 
   return (
+    <Paper style={{width: '100%', padding: '5%'}}>
     <div className={classes.root}>
       {device === DeviceType.Phone ? (
         <>
@@ -214,6 +216,7 @@ const RaffleEndedScreen: FC<IRaffleEndedScreenProps> = ({
       )}
       <div className={classes.spacer} />
     </div>
+    </Paper>
   );
 };
 

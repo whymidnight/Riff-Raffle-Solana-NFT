@@ -10,6 +10,7 @@ import { Raffle } from '../../lib/types';
 import { useViewport } from '../../hooks/useViewport';
 import FilterBar from './components/FilterBar';
 import topLogo from '../../assets/topLogo.gif';
+import Paper from '@material-ui/core/Paper';
 
 const ExploreRafflesScreen: FC = () => {
   console.log(process.env.NODE_ENV);
@@ -60,8 +61,7 @@ const ExploreRafflesScreen: FC = () => {
     );
 
   return (
-    <>
-      <img src={floateesLogo} alt={'disord-logo'} />
+    <Paper style={{width: '100%', padding: '5%'}}>
       <FilterBar
         hideEndedRaffles={hideEndedRaffles}
         setHideEndedRaffles={setHideEndedRaffles}
@@ -75,7 +75,7 @@ const ExploreRafflesScreen: FC = () => {
           className={classes.rafflesGrid}
         >
           {rafflesToShow
-            .filter((r) => r.prizes.length > 0)
+            // .filter((r) => r.prizes.length > 0)
             .map((raffle) => (
               <RaffleCard
                 key={raffle.publicKey.toString()}
@@ -89,7 +89,7 @@ const ExploreRafflesScreen: FC = () => {
           No raffles to display.
         </Typography>
       )}
-    </>
+    </Paper>
   );
 };
 

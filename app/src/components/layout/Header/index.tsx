@@ -1,5 +1,6 @@
 import React, { FC, useState } from 'react';
 import { AppBar, IconButton } from '@material-ui/core';
+import Typography from "@material-ui/core/Typography";
 import { useWallet } from '@solana/wallet-adapter-react';
 import MenuIcon from '@material-ui/icons/Menu';
 import { ChevronLeft, Home } from '@material-ui/icons';
@@ -70,16 +71,20 @@ const Header: FC<HeaderProps> = ({ onBackNavigation }) => {
         ) : (
           <>
             <div>
-              <IconButton
-                onClick={() => push(routes.RAFFLES)}
-                className={classes.homeButton}
-              >
-                <img
-                  src="/logo_navbar.png"
-                  alt={'Site banner'}
-                  className={classes.homeButtonIcon}
-                />
-              </IconButton>
+          <Typography
+            variant="h6"
+            noWrap
+            component="a"
+            style={{
+              fontFamily: "monospace",
+              fontWeight: 800,
+              letterSpacing: ".03rem",
+              color: "inherit",
+              textDecoration: "none",
+            }}
+          >
+            NOT BORED APES
+          </Typography>
             </div>
             <div className={classes.navContainer}>
               {NAV_LINKS_LIST.filter(

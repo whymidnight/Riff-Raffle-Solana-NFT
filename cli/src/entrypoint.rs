@@ -4,10 +4,8 @@ use anchor_client::solana_sdk::{
     commitment_config::CommitmentConfig,
     instruction::Instruction,
     signature::{read_keypair_file, Keypair},
-    system_instruction,
+    system_instruction, system_program, sysvar,
     transaction::Transaction,
-    system_program,
-    sysvar,
 };
 use anchor_client::{Client, Cluster};
 use anchor_lang::prelude::*;
@@ -18,8 +16,8 @@ use chrono::NaiveDateTime;
 use clap::Parser;
 use spl_associated_token_account;
 use std::mem::size_of;
-use std::str::FromStr;
 use std::rc::Rc;
+use std::str::FromStr;
 
 const FEE_WALLET: &str = "CumSkyxk3mrC6voinTHf3RVj46Az5C65kHpCRwUxmHJ5";
 
@@ -34,7 +32,7 @@ pub struct ConfigOverride {
     #[clap(
         global = true,
         long = "program-id",
-        default_value = "raFv43GLKy2ySi5oVExZxFGwdbKRRaDQBqikiY9YbVF"
+        default_value = "2gPKWB9obxygRWPxEbA1ZHexUsQNHMH7EZ71WER8cc61"
     )]
     pub program_id: String,
 }
@@ -46,12 +44,19 @@ pub enum Command {
     },
     /// Creates a raffle.
     CreateRaffle {
+        #[clap(long = "proceeds-mint")]
         proceeds_mint: Pubkey,
+        #[clap(long = "ticket-price")]
         ticket_price: u64,
+        #[clap(long = "end-date")]
         end_date_utc: String,
-        entrants_keypair: Option<String>,
         #[clap(long = "max-entrants")]
         max_entrants: Option<u32>,
+        #[clap(long = "name")]
+        name: String,
+        #[clap(long = "image-uri")]
+        image_uri: String,
+        entrants_keypair: Option<String>,
     },
     /// Adds a prize to a raffle.
     AddPrize {
@@ -113,7 +118,8 @@ pub fn entry(opts: Opts) -> Result<()> {
             end_date_utc,
             entrants_keypair,
             max_entrants,
-            // fee_acc, hardcoded into instruction
+            name,
+            image_uri,
         } => create_raffle(
             program_id,
             &program_client,
@@ -122,7 +128,8 @@ pub fn entry(opts: Opts) -> Result<()> {
             end_date_utc,
             entrants_keypair,
             max_entrants,
-            // fee_acc,
+            name,
+            image_uri,
         ),
         Command::AddPrize {
             raffle,
@@ -181,8 +188,10 @@ fn create_raffle(
     end_date_utc: String,
     entrants_keypair: Option<String>,
     max_entrants: Option<u32>,
-    // fee_acc: Pubkey,
+    name: String,
+    image_uri: String,
 ) -> Result<()> {
+    println!("....");
     let entrants_keypair = match entrants_keypair {
         Some(entrants_keypair) => {
             read_keypair_file(entrants_keypair).expect("Could not find entrants keypair")
@@ -207,7 +216,6 @@ fn create_raffle(
             .data,
     )
     .unwrap();
-    println!("fuck1");
     let date_time = NaiveDateTime::parse_from_str(&end_date_utc, "%Y-%m-%d %H:%M")?;
     let end_timestamp: i64 = date_time.timestamp();
     println!(
@@ -215,7 +223,7 @@ fn create_raffle(
         clock.unix_timestamp, end_timestamp
     );
     let entrants_account_size = 8 + size_of::<draffle::Entrants>();
-    program_client
+    let signature = program_client
         .request()
         .instruction(system_instruction::create_account(
             &program_client.payer(),
@@ -241,9 +249,13 @@ fn create_raffle(
             end_timestamp,
             ticket_price,
             max_entrants: max_entrants.unwrap_or(draffle::ENTRANTS_SIZE),
+            name,
+            image_uri,
         })
         .signer(&entrants_keypair)
         .send()?;
+
+    println!("{}", signature.to_string());
 
     Ok(())
 }

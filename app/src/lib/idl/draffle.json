@@ -1,5 +1,5 @@
 {
-  "version": "0.1.0",
+  "version": "0.1.1",
   "name": "draffle",
   "instructions": [
     {
@@ -63,6 +63,14 @@
         {
           "name": "maxEntrants",
           "type": "u32"
+        },
+        {
+          "name": "name",
+          "type": "string"
+        },
+        {
+          "name": "imageUri",
+          "type": "string"
         }
       ]
     },
@@ -336,6 +344,14 @@
           {
             "name": "entrants",
             "type": "publicKey"
+          },
+          {
+            "name": "name",
+            "type": "string"
+          },
+          {
+            "name": "imageUri",
+            "type": "string"
           }
         ]
       }

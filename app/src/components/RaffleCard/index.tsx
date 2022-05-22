@@ -33,6 +33,7 @@ const RaffleCard: FC<RaffleCardProps> = ({
   const { push } = useHistory();
   const [isEnded, setIsEnded] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
+  console.log("made");
 
   useEffect(() => {
     const timerId = setInterval(
@@ -42,13 +43,13 @@ const RaffleCard: FC<RaffleCardProps> = ({
     return () => clearInterval(timerId);
   }, [raffle, setIsEnded]);
 
-  if (raffle.prizes.length === 0) return null;
+  // if (raffle.prizes.length === 0) return null;
 
   const prize = raffle.prizes[0];
   const imageUrl =
     raffle.metadata.overviewImageUri
       ? raffle.metadata.overviewImageUri
-      : prize.meta.imageUri;
+      : "";
 
   return (
     <Card
@@ -76,8 +77,7 @@ const RaffleCard: FC<RaffleCardProps> = ({
       <CardMedia
         component="img"
         className={classes.media}
-        src={imageUrl}
-        alt={prize.mint.name}
+        src={raffle.imageUri}
         style={isLoaded ? {} : { display: 'none' }}
         onLoad={() => setIsLoaded(true)}
       />

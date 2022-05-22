@@ -67,6 +67,8 @@ export interface Raffle {
   prizes: Prize[];
   randomness: number[] | null;
   isEnded: boolean;
+  name: string,
+  imageUri: string,
 }
 
 export interface PaymentOption {

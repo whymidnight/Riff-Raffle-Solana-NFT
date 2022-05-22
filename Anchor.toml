@@ -1,8 +1,8 @@
-anchor_version = "0.23.0"
+anchor_version = "0.24.2"
 
 [provider]
 cluster = "localnet"
-wallet = "operations/DEp4gJeVpAgXj25A1QTRR2ta35cgNKGqEyrQ7WjVv7eR.json"
+wallet = "oracle.key"
 
 [programs.localnet]
 draffle = "raFv43GLKy2ySi5oVExZxFGwdbKRRaDQBqikiY9YbVF"

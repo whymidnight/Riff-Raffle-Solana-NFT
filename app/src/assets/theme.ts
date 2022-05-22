@@ -41,7 +41,7 @@ const theme = ({ device }: { device: DeviceType }) =>
     palette: {
       type: 'dark',
       background: {
-        paper: '#212225',
+        paper: 'rgba(33, 34, 37, 0.9)',
         default:
           'linear-gradient(0deg, rgba(57,9,74,1) 0%, rgba(6,18,98,1) 100%, rgba(57,9,74,1) 100%);',
       },

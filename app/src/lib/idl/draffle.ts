@@ -1,5 +1,5 @@
 export type Draffle = {
-  "version": "0.1.0",
+  "version": "0.1.1",
   "name": "draffle",
   "instructions": [
     {
@@ -336,6 +336,14 @@ export type Draffle = {
           {
             "name": "entrants",
             "type": "publicKey"
+          },
+          {
+            "name": "name",
+            "type": "string"
+          },
+          {
+            "name": "imageUri",
+            "type": "string"
           }
         ]
       }
@@ -441,7 +449,7 @@ export type Draffle = {
 };
 
 export const IDL: Draffle = {
-  "version": "0.1.0",
+  "version": "0.1.1",
   "name": "draffle",
   "instructions": [
     {
@@ -778,7 +786,15 @@ export const IDL: Draffle = {
           {
             "name": "entrants",
             "type": "publicKey"
-          }
+          },
+          {
+            "name": "name",
+            "type": "string"
+          },
+          {
+            "name": "imageUri",
+            "type": "string"
+          },
         ]
       }
     },

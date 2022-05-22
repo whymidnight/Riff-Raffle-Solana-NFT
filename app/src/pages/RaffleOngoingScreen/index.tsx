@@ -18,6 +18,7 @@ import PrizeGalleryOngoing from './components/PrizeGalleryOngoing';
 import { useViewport } from '../../hooks/useViewport';
 import { DeviceType } from '../../providers/ViewportProvider';
 import Spacer from '../../components/Spacer';
+import Paper from '@material-ui/core/Paper';
 
 interface IRaffleOngoingScreenProps {
   raffle: Raffle;
@@ -45,6 +46,7 @@ const RaffleOngoingScreen: FC<IRaffleOngoingScreenProps> = ({
   if (!raffle) return null;
 
   return (
+    <Paper style={{width: '100%', padding: '5%'}}>
     <div className={classes.root}>
       {device === DeviceType.Phone ? (
         <>
@@ -145,6 +147,7 @@ const RaffleOngoingScreen: FC<IRaffleOngoingScreenProps> = ({
         </>
       )}
     </div>
+    </Paper>
   );
 };
 

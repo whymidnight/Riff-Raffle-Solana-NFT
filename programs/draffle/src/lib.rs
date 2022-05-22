@@ -2,10 +2,10 @@ pub mod randomness_tools;
 pub mod recent_blockhashes;
 use anchor_lang::prelude::*;
 use anchor_lang::solana_program::sysvar;
+use anchor_lang::solana_program::{program::invoke, system_instruction};
 use anchor_spl::token::Token;
 use anchor_spl::token::{self, Mint, TokenAccount};
 use std::str::FromStr;
-use anchor_lang::solana_program::{program::invoke, system_instruction};
 
 pub const ENTRANTS_SIZE: u32 = 1000;
 pub const TIME_BUFFER: i64 = 1;
@@ -13,7 +13,7 @@ pub const FEE_WALLET: &str = "CumSkyxk3mrC6voinTHf3RVj46Az5C65kHpCRwUxmHJ5";
 pub const FEE_LAMPORTS: u64 = 12_690_000; // 0.01269 SOL
 pub const FEE_LAMPORTS_RAFFLE: u64 = 119_800_000; // 0.1198 SOL
 
-declare_id!("raFv43GLKy2ySi5oVExZxFGwdbKRRaDQBqikiY9YbVF");
+declare_id!("2gPKWB9obxygRWPxEbA1ZHexUsQNHMH7EZ71WER8cc61");
 
 #[program]
 pub mod draffle {
@@ -24,6 +24,8 @@ pub mod draffle {
         end_timestamp: i64,
         ticket_price: u64,
         max_entrants: u32,
+        name: String,
+        image_uri: String,
     ) -> Result<()> {
         let raffle = &mut ctx.accounts.raffle;
 
@@ -34,6 +36,8 @@ pub mod draffle {
         raffle.end_timestamp = end_timestamp;
         raffle.ticket_price = ticket_price;
         raffle.entrants = ctx.accounts.entrants.key();
+        raffle.name = name;
+        raffle.image_uri = image_uri;
 
         let mut entrants = ctx.accounts.entrants.load_init()?;
         if max_entrants > ENTRANTS_SIZE {
@@ -402,6 +406,12 @@ pub struct Raffle {
     pub end_timestamp: i64,
     pub ticket_price: u64,
     pub entrants: Pubkey,
+    pub name: String,      // ±32 char/byte space alloc
+    pub image_uri: String, // ±320 char/byte space alloc
+}
+
+impl Raffle {
+    pub const LEN: u64 = 8 + 32 + 4 + 4 + 32 + 8 + 8 + 32 + 32 + 320;
 }
 
 #[account(zero_copy)]
@@ -439,7 +449,11 @@ impl<'info> CreateRaffle<'info> {
 impl<'info> BuyTickets<'info> {
     fn transfer_fee(&self) -> Result<()> {
         invoke(
-            &system_instruction::transfer(self.buyer_transfer_authority.key, self.fee_acc.key, FEE_LAMPORTS),
+            &system_instruction::transfer(
+                self.buyer_transfer_authority.key,
+                self.fee_acc.key,
+                FEE_LAMPORTS,
+            ),
             &[
                 self.buyer_transfer_authority.to_account_info(),
                 self.fee_acc.clone(),

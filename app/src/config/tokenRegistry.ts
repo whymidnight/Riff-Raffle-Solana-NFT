@@ -18,14 +18,14 @@ const tokenRegistry = {
       imageURI: '/resources/solana-logo.gif',
     },
   },
-  '29a6AWBP44QUnfZKNpWSU7tkfrfDBym94EtCZBPvJ2ao': {
+  'EE5qLwD5zh2w27cvGceW9dco6QUrsgNrz24YaHLxxVpn': {
     chainId: 101,
-    address: '29a6AWBP44QUnfZKNpWSU7tkfrfDBym94EtCZBPvJ2ao',
-    symbol: '$A',
-    name: 'A TOKEN',
-    decimals: 9,
+    address: 'EE5qLwD5zh2w27cvGceW9dco6QUrsgNrz24YaHLxxVpn',
+    symbol: '$NOT',
+    name: 'Not Ape Coin',
+    decimals: 3,
     logoURI:
-      'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/9nusLQeFKiocswDt6NQsiErm1M43H2b8x6v5onhivqKv/logo.png',
+      'https://raw.githubusercontent.com/not-bored-ape/images/master/unknown.jpeg',
     tags: [],
     extensions: {
       website: 'https://sollama.finance',
@@ -37,7 +37,7 @@ const tokenRegistry = {
     address: '72UgZ7avdJZBbv3wR7hbWcFy6dyHHNAoJw7CimGA55Zh',
     symbol: '$PM1',
     name: 'USDT',
-    decimals: 2,
+    decimals: 3,
     logoURI: `${process.env.REACT_APP_URL}/tether-usdt-logo.png`,
     tags: [],
     extensions: {

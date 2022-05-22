@@ -52,6 +52,7 @@ const RafflesStoreProvider: FC = ({ children = null as any }) => {
     connection: Connection,
     entrantsDataRaw?: EntrantsDataRaw
   ): Promise<Raffle> => {
+    console.log(raffleRaw);
     const proceedsAccount = await fetchProceedsAccount(
       raffleRaw.publicKey,
       draffleClient,
@@ -104,11 +105,13 @@ const RafflesStoreProvider: FC = ({ children = null as any }) => {
         mint: proceedsAccount.mintInfo,
       },
       isEnded: endTimestamp < new Date(),
+      name: String(raffleRaw.account.name),
+      imageUri: String(raffleRaw.account.imageUri),
     };
   };
 
   const fetchAllRaffles = useCallback(
-    async (showAll: boolean = false) => {
+    async (showAll: boolean = true) => {
       // LOOK HERE
       setFetching(true);
       let raffleDataRawProgramAccounts: ProgramAccount<RaffleDataRaw>[] = [];
@@ -136,7 +139,7 @@ const RafflesStoreProvider: FC = ({ children = null as any }) => {
             getAssociatedRaffleData(
               raffleRaw,
               RAFFLES_WHITELIST.get(raffleRaw.publicKey.toString()) || {
-                name: 'Unnamed Raffle', // LOOOK HERE
+                name: String(raffleRaw.account.name), // LOOOK HERE
                 alternatePurchaseMints: [],
               },
               draffleClient,

@@ -26,6 +26,7 @@ export const fetchProceedsAccount = async (
   const account = await connection.getAccountInfo(address);
   if (!account) throw Error('Failed to fetch proceeds account');
   const data = parseTokenAccount(account.data);
+  console.log(data);
   const tokenInfo = tokenInfoMap.get(data.mint.toString());
   if (!tokenInfo)
     throw Error(
@@ -185,6 +186,7 @@ export const getRaffleProgramAccounts = async (
   const result = await draffleClient.provider.connection.getProgramAccounts(
     draffleClient.programId
   );
+  console.log(".....", result);
   const raffleDiscriminator = AccountsCoder.accountDiscriminator('Raffle');
   const entrantsDiscriminator = AccountsCoder.accountDiscriminator('Entrants');
 
