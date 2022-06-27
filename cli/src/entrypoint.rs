@@ -65,6 +65,12 @@ pub enum Command {
         prize_amount: u64,
         prize_index: u32,
     },
+    ReclaimPrize {
+        raffle: Pubkey,
+        prize_mint: Pubkey,
+        prize_amount: u64,
+        prize_index: u32,
+    },
     /// Reveal winners of a raffle.
     RevealWinners {
         raffle: Pubkey,
@@ -137,6 +143,19 @@ pub fn entry(opts: Opts) -> Result<()> {
             prize_amount,
             prize_index,
         } => add_prize(
+            program_id,
+            &program_client,
+            raffle,
+            prize_mint,
+            prize_amount,
+            prize_index,
+        ),
+        Command::ReclaimPrize {
+            raffle,
+            prize_mint,
+            prize_amount,
+            prize_index,
+        } => reclaim_prize(
             program_id,
             &program_client,
             raffle,
@@ -281,7 +300,7 @@ fn add_prize(
     );
 
     // Request arguments
-    program_client
+    let tx = program_client
         .request()
         .accounts(draffle::accounts::AddPrize {
             raffle,
@@ -297,7 +316,53 @@ fn add_prize(
             prize_index,
             amount: prize_amount,
         })
-        .send()?;
+        .send();
+
+    println!("{:?}", tx.err().unwrap());
+
+    Ok(())
+}
+fn reclaim_prize(
+    program_id: Pubkey,
+    program_client: &anchor_client::Program,
+    raffle: Pubkey,
+    prize_mint: Pubkey,
+    prize_amount: u64,
+    prize_index: u32,
+) -> Result<()> {
+    println!("Reclaiming prize to raffle");
+    // Accounts creation
+    let (prize, prize_bump) = Pubkey::find_program_address(
+        &[raffle.as_ref(), b"prize", &prize_index.to_le_bytes()],
+        &program_id,
+    );
+
+    let creator_prize_token_account = spl_associated_token_account::get_associated_token_address(
+        &program_client.payer(),
+        &prize_mint,
+    );
+
+    // Request arguments
+    let tx = program_client
+        .request()
+        .accounts(draffle::accounts::ReclaimPrize {
+            raffle,
+            creator: program_client.payer(),
+            to: creator_prize_token_account,
+            prize,
+            prize_mint,
+            system_program: system_program::id(),
+            token_program: spl_token::id(),
+            rent: sysvar::rent::ID,
+        })
+        .args(draffle::instruction::ReclaimPrize {
+            _prize_index: prize_index,
+            _prize_bump: prize_bump,
+            amount: prize_amount,
+        })
+        .send();
+
+    println!("{:?}", tx.err().unwrap());
 
     Ok(())
 }

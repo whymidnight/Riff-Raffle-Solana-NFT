@@ -86,6 +86,41 @@ pub mod draffle {
         Ok(())
     }
 
+    pub fn reclaim_prize(
+        ctx: Context<ReclaimPrize>,
+        _prize_index: u32,
+        _prize_bump: u8,
+        amount: u64,
+    ) -> Result<()> {
+        let raffle = &mut ctx.accounts.raffle;
+
+        let (_, nonce) = Pubkey::find_program_address(
+            &[b"raffle".as_ref(), raffle.entrants.as_ref()],
+            ctx.program_id,
+        );
+        let seeds = &[b"raffle".as_ref(), raffle.entrants.as_ref(), &[nonce]];
+        let signer_seeds = &[&seeds[..]];
+        token::transfer(
+            CpiContext::new_with_signer(
+                ctx.accounts.token_program.to_account_info(),
+                token::Transfer {
+                    from: ctx.accounts.prize.to_account_info(),
+                    to: ctx.accounts.to.to_account_info(),
+                    authority: raffle.to_account_info(),
+                },
+                signer_seeds,
+            ),
+            amount,
+        )?;
+
+        raffle.total_prizes = raffle
+            .total_prizes
+            .checked_rem(1)
+            .ok_or(RaffleError::InvalidCalculation)?;
+
+        Ok(())
+    }
+
     pub fn buy_tickets(ctx: Context<BuyTickets>, amount: u32) -> Result<()> {
         let clock = Clock::get()?;
         let raffle = &mut ctx.accounts.raffle;
@@ -296,7 +331,7 @@ pub struct AddPrize<'info> {
     #[account(mut)]
     pub from: Account<'info, TokenAccount>,
     #[account(
-        init,
+        init_if_needed,
         seeds = [raffle.key().as_ref(), b"prize", &prize_index.to_le_bytes()],
         bump,
         payer = creator,
@@ -366,6 +401,27 @@ pub struct ClaimPrize<'info> {
     pub fee_acc: AccountInfo<'info>,
     pub token_program: Program<'info, Token>,
     pub system_program: Program<'info, System>,
+}
+
+#[derive(Accounts)]
+#[instruction(prize_index: u32, prize_bump: u8)]
+pub struct ReclaimPrize<'info> {
+    #[account(mut, has_one = creator)]
+    pub raffle: Account<'info, Raffle>,
+    #[account(mut)]
+    pub creator: Signer<'info>,
+    #[account(mut)]
+    pub to: Account<'info, TokenAccount>,
+    #[account(
+        mut,
+        seeds = [raffle.key().as_ref(), b"prize", &prize_index.to_le_bytes()],
+        bump = prize_bump
+    )]
+    pub prize: Account<'info, TokenAccount>,
+    pub prize_mint: Account<'info, Mint>,
+    pub system_program: Program<'info, System>,
+    pub token_program: Program<'info, Token>,
+    pub rent: Sysvar<'info, Rent>,
 }
 
 #[derive(Accounts)]
